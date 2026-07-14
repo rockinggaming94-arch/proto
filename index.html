@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="Proofy Studio — independent digital studio by Abulfaiz Sayyed, building expressive websites, useful web apps, automation and media.">
+  <title>Proofy Studio — Digital work with proof</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+  <div class="loader" aria-hidden="true"><p class="loader__word">Hello.</p></div>
+  <div class="cursor" aria-hidden="true"></div>
+  <div class="site">
+    <header class="header">
+      <a class="brand magnetic" href="#top" aria-label="Proofy Studio, back to top"><span class="brand__mark">P.</span><span>Proofy Studio</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span>Menu</span></button>
+      <nav id="primary-nav" class="nav" aria-label="Primary navigation">
+        <a href="#work">Work</a><a href="#about">Studio</a><a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__meta reveal"><span>Independent digital studio</span><span>Solapur, India · <span class="status-dot"></span> Available</span></div>
+        <h1 id="hero-title" class="hero__title" aria-label="Proofy Studio">
+          <span class="hero__line hero__line--one">PROOFY</span>
+          <span class="hero__line hero__line--two">STUDIO<span class="hero__period">.</span></span>
+        </h1>
+        <div class="hero__foot reveal">
+          <p>Websites. Products. Motion.<br>Built to leave a mark.</p>
+          <a class="round-link magnetic" href="#work" aria-label="Explore selected work"><span>Scroll<br>to explore</span><span aria-hidden="true">↓</span></a>
+        </div>
+      </section>
+
+      <div class="ticker" aria-hidden="true"><div class="ticker__track"><span>DEVELOPMENT ✦ DESIGN ✦ AUTOMATION ✦ STORYTELLING ✦ GAMING ✦</span><span>DEVELOPMENT ✦ DESIGN ✦ AUTOMATION ✦ STORYTELLING ✦ GAMING ✦</span></div></div>
+
+      <section id="about" class="intro section">
+        <p class="eyebrow reveal">01 / The studio</p>
+        <div class="intro__grid">
+          <h2 class="statement split-text">I make digital things people remember — and products they actually use.</h2>
+          <div class="intro__aside reveal">
+            <p>Proofy Studio is the independent practice of Abulfaiz Sayyed. Strategy, interfaces, code and motion, handled end-to-end with curiosity and craft.</p>
+            <p>From local businesses in Solapur to peer-to-peer tools used anywhere, every project starts with a real problem and ends with measurable proof.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="capabilities section section--line" aria-labelledby="capabilities-title">
+        <div class="section-heading reveal"><p class="eyebrow">02 / Capabilities</p><h2 id="capabilities-title">One studio.<br>Many modes.</h2></div>
+        <div class="capability-list">
+          <article class="capability reveal"><span>01</span><h3>Websites</h3><p>High-converting business sites, portfolios and experiences with distinct visual character.</p></article>
+          <article class="capability reveal"><span>02</span><h3>Products</h3><p>PWAs, WebRTC tools, dashboards and focused utilities that solve everyday problems.</p></article>
+          <article class="capability reveal"><span>03</span><h3>Automation</h3><p>Scrapers, offer bots and workflow systems that turn repetitive work into quiet machinery.</p></article>
+          <article class="capability reveal"><span>04</span><h3>Content</h3><p>Editing, thumbnails and channel strategy shaped by growing Proofy Gamerz past 7K subscribers.</p></article>
+        </div>
+      </section>
+
+      <section id="work" class="work section" aria-labelledby="work-title">
+        <div class="work__head reveal"><div><p class="eyebrow">03 / Selected work</p><h2 id="work-title">Proof, not<br>promises.</h2></div><p>Seven launches across products, education, entertainment and local business.</p></div>
+        <div id="project-list" class="project-list"></div>
+        <a class="text-link magnetic" href="https://github.com/proofystudio" target="_blank" rel="noopener noreferrer">See the code on GitHub <span aria-hidden="true">↗</span></a>
+      </section>
+
+      <section class="showreel" aria-label="Project screenshots">
+        <div class="gallery-lane gallery-lane--forward" id="gallery-forward"></div>
+        <div class="gallery-lane gallery-lane--reverse" id="gallery-reverse"></div>
+      </section>
+
+      <section class="story section">
+        <div class="story__portrait reveal"><img src="assets/images/profile.jpg" width="720" height="900" loading="lazy" alt="Abulfaiz Sayyed, founder of Proofy Studio"></div>
+        <div class="story__copy">
+          <p class="eyebrow reveal">04 / Beyond the browser</p>
+          <h2 class="split-text">Builder by day.<br>Creator always.</h2>
+          <p class="reveal">I learned attention through gaming videos, precision through editing, and systems thinking through code. Proofy Gamerz grew to 7,000+ subscribers; Proofy Studio turns those lessons into digital work with pace, personality and purpose.</p>
+          <div class="story__numbers reveal"><div><strong>7K+</strong><span>YouTube community</span></div><div><strong>7</strong><span>Featured launches</span></div><div><strong>∞</strong><span>Curiosity</span></div></div>
+        </div>
+      </section>
+
+      <section id="contact" class="contact" aria-labelledby="contact-title">
+        <div class="contact__top">
+          <p class="eyebrow">05 / Start something</p>
+          <span><span class="status-dot"></span> Open for selected projects</span>
+        </div>
+        <h2 id="contact-title">HAVE AN IDEA?<br><span>LET&apos;S MAKE IT REAL.</span></h2>
+        <div class="contact__actions">
+          <a class="cta magnetic" href="mailto:proofystudio@gmail.com">proofystudio@gmail.com <span aria-hidden="true">↗</span></a>
+          <a class="cta cta--outline magnetic" href="https://wa.me/919309848425" target="_blank" rel="noopener noreferrer">WhatsApp <span aria-hidden="true">↗</span></a>
+        </div>
+        <footer class="footer"><div><span>© 2026 Proofy Studio</span><span>Solapur, Maharashtra</span></div><div><span id="clock">IST 00:00:00</span><a href="https://github.com/proofystudio" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://www.youtube.com/@ProofyGamerz" target="_blank" rel="noopener noreferrer">YouTube ↗</a></div></footer>
+      </section>
+    </main>
+  </div>
+  <div class="project-preview" aria-hidden="true"><img src="" alt=""></div>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/projects.js"></script><script src="js/magnetic.js"></script><script src="js/scroll-animations.js"></script><script src="js/main.js"></script>
+</body>
+</html>
