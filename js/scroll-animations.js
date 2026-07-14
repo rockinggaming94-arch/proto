@@ -1,12 +1,31 @@
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!reduced && window.Lenis) { const lenis = new Lenis({ duration: 1.05, smoothWheel: true }); const raf = time => { lenis.raf(time); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
-  const reveals = document.querySelectorAll('.reveal'); const observer = new IntersectionObserver(entries => entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold:.12 }); reveals.forEach(el=>observer.observe(el));
-  if (!reduced && window.gsap && window.ScrollTrigger) {
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.to('.gallery-lane--forward',{xPercent:-20,ease:'none',scrollTrigger:{trigger:'.showreel',scrub:1,start:'top bottom',end:'bottom top'}});
-    gsap.fromTo('.gallery-lane--reverse',{xPercent:-20},{xPercent:0,ease:'none',scrollTrigger:{trigger:'.showreel',scrub:1,start:'top bottom',end:'bottom top'}});
-    gsap.utils.toArray('.split-text').forEach(el=>gsap.from(el,{y:80,opacity:0,duration:1,scrollTrigger:{trigger:el,start:'top 85%'}}));
-    const preview = document.querySelector('.project-preview'); window.addEventListener('pointermove',e=>{ if(preview.classList.contains('is-active')) gsap.to(preview,{x:e.clientX,y:e.clientY,opacity:1,duration:.45,ease:'power3.out'}); else gsap.to(preview,{opacity:0,duration:.2}); });
+  const animated = document.querySelectorAll('.reveal, .split-text, .image-reveal');
+  animated.forEach((element, index) => element.style.setProperty('--delay', `${Math.min(index % 4, 3) * 45}ms`));
+
+  if (reduced) { animated.forEach(element => element.classList.add('is-visible')); return; }
+
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); }
+    });
+  }, { rootMargin:'0px 0px -8% 0px', threshold:.08 });
+  animated.forEach(element => revealObserver.observe(element));
+
+  const pausable = document.querySelectorAll('.ticker, .showreel');
+  const motionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => entry.target.classList.toggle('is-paused', !entry.isIntersecting));
+  }, { rootMargin:'150px' });
+  pausable.forEach(element => motionObserver.observe(element));
+
+  if (matchMedia('(pointer:fine) and (min-width: 801px)').matches) {
+    const title = document.querySelector('.hero__title');
+    let ticking = false;
+    const updateHero = () => {
+      const offset = Math.min(scrollY, innerHeight) * .075;
+      title.style.transform = `translate3d(0,${offset}px,0)`;
+      ticking = false;
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updateHero); } }, { passive:true });
   }
 })();

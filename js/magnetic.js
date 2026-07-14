@@ -1,1 +1,19 @@
-(() => { if (!matchMedia('(pointer:fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return; document.querySelectorAll('.magnetic').forEach(el => { el.addEventListener('pointermove', e => { const r = el.getBoundingClientRect(); el.style.transform = `translate(${(e.clientX-r.left-r.width/2)*.14}px,${(e.clientY-r.top-r.height/2)*.14}px)`; }); el.addEventListener('pointerleave', () => { el.style.transition='transform .5s cubic-bezier(.16,1,.3,1)'; el.style.transform=''; setTimeout(()=>el.style.transition='',500); }); }); })();
+(() => {
+  if (!matchMedia('(pointer:fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.magnetic').forEach(element => {
+    let frame;
+    element.addEventListener('pointermove', event => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const rect = element.getBoundingClientRect();
+        const x = (event.clientX - rect.left - rect.width / 2) * .12;
+        const y = (event.clientY - rect.top - rect.height / 2) * .12;
+        element.style.transform = `translate3d(${x}px,${y}px,0)`;
+      });
+    }, { passive:true });
+    element.addEventListener('pointerleave', () => {
+      cancelAnimationFrame(frame); element.style.transition = 'transform .45s cubic-bezier(.16,1,.3,1)'; element.style.transform = 'translate3d(0,0,0)';
+      setTimeout(() => { element.style.transition = ''; }, 450);
+    });
+  });
+})();

@@ -1,13 +1,21 @@
 (() => {
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = matchMedia('(pointer:fine)').matches;
   const site = document.querySelector('.site');
   const loader = document.querySelector('.loader');
   const loaderWord = document.querySelector('.loader__word');
-  const words = ['Hello.', 'नमस्कार.', 'Welcome.', 'Proofy Studio.'];
-  if (reduceMotion) { site.classList.add('is-ready'); loader.remove(); }
+
+  if (reduced) { site.classList.add('is-ready'); loader?.remove(); }
   else {
-    let i = 0;
-    const cycle = setInterval(() => { i += 1; loaderWord.textContent = words[i]; if (i === words.length - 1) { clearInterval(cycle); setTimeout(() => { site.classList.add('is-ready'); loader.classList.add('is-done'); setTimeout(() => loader.remove(), 1100); }, 500); } }, 500);
+    const words = ['Hello.', 'नमस्कार.', 'Welcome.', 'Proofy Studio.'];
+    let index = 0;
+    const cycle = setInterval(() => {
+      index += 1; loaderWord.textContent = words[index];
+      if (index === words.length - 1) {
+        clearInterval(cycle);
+        setTimeout(() => { site.classList.add('is-ready'); loader.classList.add('is-done'); setTimeout(() => loader.remove(), 900); }, 350);
+      }
+    }, 360);
   }
 
   const projectList = document.querySelector('#project-list');
@@ -17,25 +25,45 @@
     const link = document.createElement('a');
     link.className = 'project'; link.href = project.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
     link.setAttribute('aria-label', `${project.title}, ${project.type}, opens in a new tab`);
-    link.innerHTML = `<span class="project__number">${project.n}</span><span class="project__title">${project.title}</span><span class="project__meta">${project.type}<br>${project.desc}</span><span class="project__arrow" aria-hidden="true">↗</span><span class="project__mobile-image"><img src="${project.image}" loading="lazy" alt="${project.title} project preview"></span>`;
-    if (matchMedia('(pointer:fine)').matches) {
-      link.addEventListener('mouseenter', () => { previewImage.src = project.image; preview.classList.add('is-active'); });
-      link.addEventListener('mouseleave', () => preview.classList.remove('is-active'));
+    link.innerHTML = `<span class="project__number">${project.n} / ${project.year}</span><span class="project__title">${project.title}</span><span class="project__meta">${project.type}<br>${project.desc}</span><span class="project__arrow" aria-hidden="true">↗</span><span class="project__mobile-image"><img src="${project.image}" loading="lazy" width="960" height="600" alt="${project.title} website preview"></span>`;
+    if (finePointer && !reduced) {
+      link.addEventListener('pointerenter', () => { previewImage.src = project.image; preview.classList.add('is-active'); document.body.classList.add('viewing-project'); });
+      link.addEventListener('pointerleave', () => { preview.classList.remove('is-active'); document.body.classList.remove('viewing-project'); });
     }
     projectList.appendChild(link);
   });
 
-  const images = window.PROJECTS.map(project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" alt="Screenshot of ${project.title}"></figure>`).join('');
-  document.querySelector('#gallery-forward').innerHTML = images + images;
-  document.querySelector('#gallery-reverse').innerHTML = [...window.PROJECTS].reverse().map(project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" alt="Screenshot of ${project.title}"></figure>`).join('') + images;
+  const card = project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"></figure>`;
+  const forward = window.PROJECTS.map(card).join('');
+  const reverse = [...window.PROJECTS].reverse().map(card).join('');
+  document.querySelector('#gallery-forward').innerHTML = forward + forward;
+  document.querySelector('#gallery-reverse').innerHTML = reverse + reverse;
 
-  const menu = document.querySelector('.menu-toggle'); const nav = document.querySelector('.nav');
-  menu.addEventListener('click', () => { const open = menu.getAttribute('aria-expanded') === 'true'; menu.setAttribute('aria-expanded', String(!open)); nav.classList.toggle('is-open', !open); });
-  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { nav.classList.remove('is-open'); menu.setAttribute('aria-expanded', 'false'); }));
+  const menu = document.querySelector('.menu-toggle');
+  const menuLabel = menu.querySelector('.menu-toggle__label');
+  const nav = document.querySelector('.nav');
+  const setMenu = open => { menu.setAttribute('aria-expanded', String(open)); nav.classList.toggle('is-open', open); menuLabel.textContent = open ? 'Close' : 'Menu'; document.body.style.overflow = open ? 'hidden' : ''; };
+  menu.addEventListener('click', () => setMenu(menu.getAttribute('aria-expanded') !== 'true'));
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', event => { if (event.key === 'Escape') setMenu(false); });
 
   const clock = document.querySelector('#clock');
   const updateClock = () => { clock.textContent = `IST ${new Intl.DateTimeFormat('en-IN', { timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true }).format(new Date())}`; };
   updateClock(); setInterval(updateClock, 1000);
 
-  if (matchMedia('(pointer:fine)').matches) { const cursor = document.querySelector('.cursor'); window.addEventListener('pointermove', e => { cursor.style.left = `${e.clientX}px`; cursor.style.top = `${e.clientY}px`; }); }
+  if (finePointer && !reduced) {
+    const cursor = document.querySelector('.cursor');
+    let x = -30, y = -30, px = -30, py = -30, frame = 0;
+    const renderPointer = () => {
+      px += (x - px) * .22; py += (y - py) * .22;
+      cursor.style.transform = `translate3d(${px}px,${py}px,0) translate(-50%,-50%)`;
+      if (preview.classList.contains('is-active')) preview.style.transform = `translate3d(${px + 36}px,${py - 22}px,0) translate(-50%,-50%) rotate(-2deg)`;
+      if (Math.abs(x - px) > .1 || Math.abs(y - py) > .1) frame = requestAnimationFrame(renderPointer);
+      else frame = 0;
+    };
+    addEventListener('pointermove', event => {
+      x = event.clientX; y = event.clientY;
+      if (!frame) frame = requestAnimationFrame(renderPointer);
+    }, { passive:true });
+  }
 })();
