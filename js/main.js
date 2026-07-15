@@ -7,7 +7,7 @@
 
   if (reduced) { site.classList.add('is-ready'); loader?.remove(); }
   else {
-    const words = ['Hello.', 'नमस्कार.', 'Welcome.', 'Proofy Studio.'];
+    const words = ['Hello.', 'नमस्कार.', 'Welcome.', 'Abulfaiz.'];
     let index = 0;
     const cycle = setInterval(() => {
       index += 1; loaderWord.textContent = words[index];
@@ -33,7 +33,7 @@
     projectList.appendChild(link);
   });
 
-  const card = project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"></figure>`;
+  const card = project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"><figcaption><span>${project.n} — ${project.title}</span><span>${project.year}</span></figcaption></figure>`;
   const forward = window.PROJECTS.map(card).join('');
   const reverse = [...window.PROJECTS].reverse().map(card).join('');
   document.querySelector('#gallery-forward').innerHTML = forward + forward;
