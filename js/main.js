@@ -33,7 +33,7 @@
     projectList.appendChild(link);
   });
 
-  const card = project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"><figcaption><span>${project.n} — ${project.title}</span><span>${project.year}</span></figcaption></figure>`;
+  const card = project => `<a class="gallery-card" href="${project.url}" target="_blank" rel="noopener noreferrer" aria-label="Open ${project.title} website"><figure><div class="gallery-card__image"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"></div><figcaption><span class="gallery-card__title">${project.title}</span><span>${project.type} — ${project.year}</span></figcaption></figure></a>`;
   const forward = window.PROJECTS.map(card).join('');
   const reverse = [...window.PROJECTS].reverse().map(card).join('');
   document.querySelector('#gallery-forward').innerHTML = forward + forward;
