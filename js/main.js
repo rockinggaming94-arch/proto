@@ -45,7 +45,22 @@
   const setMenu = open => { menu.setAttribute('aria-expanded', String(open)); nav.classList.toggle('is-open', open); menuLabel.textContent = open ? 'Close' : 'Menu'; document.body.style.overflow = open ? 'hidden' : ''; };
   menu.addEventListener('click', () => setMenu(menu.getAttribute('aria-expanded') !== 'true'));
   nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-  addEventListener('keydown', event => { if (event.key === 'Escape') setMenu(false); });
+
+  const floatingToggle = document.querySelector('.floating-menu__toggle');
+  const floatingPanel = document.querySelector('.floating-menu__panel');
+  const setFloatingMenu = open => {
+    floatingToggle.setAttribute('aria-expanded', String(open));
+    floatingPanel.classList.toggle('is-open', open);
+    floatingToggle.querySelector('span').textContent = open ? 'Close' : 'More';
+  };
+  floatingToggle.addEventListener('click', () => setFloatingMenu(floatingToggle.getAttribute('aria-expanded') !== 'true'));
+  floatingPanel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setFloatingMenu(false)));
+  document.addEventListener('pointerdown', event => {
+    if (!event.target.closest('.floating-menu')) setFloatingMenu(false);
+  });
+  addEventListener('keydown', event => {
+    if (event.key === 'Escape') { setMenu(false); setFloatingMenu(false); }
+  });
 
   const clock = document.querySelector('#clock');
   const updateClock = () => { clock.textContent = `IST ${new Intl.DateTimeFormat('en-IN', { timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true }).format(new Date())}`; };
