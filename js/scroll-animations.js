@@ -33,15 +33,14 @@
   let targetVelocity = 0;
   let velocity = 0;
   let laneA = 0;
-  let laneB = 0;
+  let laneB = null;
   let lastTime = performance.now();
   let running = true;
 
-  const wrapLane = (value, width) => {
-    const half = width / 2;
-    if (!half) return value;
-    while (value <= -half) value += half;
-    while (value > 0) value -= half;
+  const wrapLane = (value, cycleWidth) => {
+    if (!cycleWidth) return value;
+    while (value <= -cycleWidth) value += cycleWidth;
+    while (value > 0) value -= cycleWidth;
     return value;
   };
 
@@ -86,10 +85,13 @@
 
     if (showreel?.classList.contains('is-inview') && lanes.length === 2) {
       const impulse = velocity * .62;
-      laneA = wrapLane(laneA - (.42 + Math.max(0, impulse)) * dt, lanes[0].scrollWidth);
-      laneB = wrapLane(laneB + (.36 + Math.max(0, -impulse)) * dt, lanes[1].scrollWidth);
+      const cycleA = lanes[0].scrollWidth / 2;
+      const cycleB = lanes[1].scrollWidth / 2;
+      if (laneB === null) laneB = -cycleB;
+      laneA = wrapLane(laneA - (.42 + Math.max(0, impulse)) * dt, cycleA);
+      laneB = wrapLane(laneB + (.36 + Math.max(0, -impulse)) * dt, cycleB);
       lanes[0].style.setProperty('--lane-x', `${laneA}px`);
-      lanes[1].style.setProperty('--lane-x', `${laneB - lanes[1].scrollWidth / 2}px`);
+      lanes[1].style.setProperty('--lane-x', `${laneB}px`);
     }
 
     lastY = y;
