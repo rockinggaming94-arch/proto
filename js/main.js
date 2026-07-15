@@ -21,14 +21,32 @@
   const projectList = document.querySelector('#project-list');
   const preview = document.querySelector('.project-preview');
   const previewImage = preview.querySelector('img');
+  let previewSwapTimer;
+  const changePreview = project => {
+    clearTimeout(previewSwapTimer);
+    const nextImage = new Image();
+    nextImage.src = project.image;
+    nextImage.alt = `${project.title} website preview`;
+    nextImage.addEventListener('load', () => {
+      preview.classList.add('is-switching');
+      previewSwapTimer = setTimeout(() => {
+        previewImage.src = nextImage.src;
+        previewImage.alt = nextImage.alt;
+        preview.dataset.project = project.n;
+        preview.classList.remove('is-switching');
+        preview.classList.add('is-revealing');
+        setTimeout(() => preview.classList.remove('is-revealing'), 650);
+      }, 180);
+    }, { once:true });
+  };
   window.PROJECTS.forEach((project) => {
     const link = document.createElement('a');
     link.className = 'project'; link.href = project.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
     link.setAttribute('aria-label', `${project.title}, ${project.type}, opens in a new tab`);
     link.innerHTML = `<span class="project__number">${project.n} / ${project.year}</span><span class="project__title">${project.title}</span><span class="project__meta">${project.type}<br>${project.desc}</span><span class="project__arrow" aria-hidden="true">↗</span><span class="project__mobile-image"><img src="${project.image}" loading="lazy" width="960" height="600" alt="${project.title} website preview"></span>`;
     if (finePointer && !reduced) {
-      link.addEventListener('pointerenter', () => { previewImage.src = project.image; preview.classList.add('is-active'); document.body.classList.add('viewing-project'); });
-      link.addEventListener('pointerleave', () => { preview.classList.remove('is-active'); document.body.classList.remove('viewing-project'); });
+      link.addEventListener('pointerenter', () => { changePreview(project); preview.classList.add('is-active'); document.body.classList.add('viewing-project'); });
+      link.addEventListener('pointerleave', () => { clearTimeout(previewSwapTimer); preview.classList.remove('is-active', 'is-switching', 'is-revealing'); document.body.classList.remove('viewing-project'); });
     }
     projectList.appendChild(link);
   });
