@@ -7,7 +7,7 @@
 
   if (reduced) { site.classList.add('is-ready'); loader?.remove(); }
   else {
-    const words = ['Hello.', 'नमस्कार.', 'Welcome.', 'Abulfaiz.'];
+    const words = ['Hello.', 'नमस्कार.', 'Welcome.', '</Proofy Studio>'];
     let index = 0;
     const cycle = setInterval(() => {
       index += 1; loaderWord.textContent = words[index];
