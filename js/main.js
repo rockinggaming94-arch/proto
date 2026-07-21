@@ -7,7 +7,7 @@
 
   if (reduced) { site.classList.add('is-ready'); loader?.remove(); }
   else {
-    const words = ['Hello.', 'नमस्कार.', 'Welcome.', 'Proofy Studio.'];
+    const words = ['Hello.', 'नमस्कार.', 'Welcome.', '</Proofy Studio>'];
     let index = 0;
     const cycle = setInterval(() => {
       index += 1; loaderWord.textContent = words[index];
@@ -27,13 +27,13 @@
     link.setAttribute('aria-label', `${project.title}, ${project.type}, opens in a new tab`);
     link.innerHTML = `<span class="project__number">${project.n} / ${project.year}</span><span class="project__title">${project.title}</span><span class="project__meta">${project.type}<br>${project.desc}</span><span class="project__arrow" aria-hidden="true">↗</span><span class="project__mobile-image"><img src="${project.image}" loading="lazy" width="960" height="600" alt="${project.title} website preview"></span>`;
     if (finePointer && !reduced) {
-      link.addEventListener('pointerenter', () => { previewImage.src = project.image; preview.classList.add('is-active'); document.body.classList.add('viewing-project'); });
+      link.addEventListener('pointerenter', () => { previewImage.src = project.image; previewImage.alt = `${project.title} website preview`; preview.classList.add('is-active'); document.body.classList.add('viewing-project'); });
       link.addEventListener('pointerleave', () => { preview.classList.remove('is-active'); document.body.classList.remove('viewing-project'); });
     }
     projectList.appendChild(link);
   });
 
-  const card = project => `<figure class="gallery-card"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"></figure>`;
+  const card = project => `<a class="gallery-card" href="${project.url}" target="_blank" rel="noopener noreferrer" aria-label="Open ${project.title} website"><figure><div class="gallery-card__image"><img src="${project.image}" loading="lazy" width="960" height="600" alt="Screenshot of ${project.title}"></div><figcaption><span class="gallery-card__title">${project.title}</span><span>${project.type} — ${project.year}</span></figcaption></figure></a>`;
   const forward = window.PROJECTS.map(card).join('');
   const reverse = [...window.PROJECTS].reverse().map(card).join('');
   document.querySelector('#gallery-forward').innerHTML = forward + forward;
@@ -45,7 +45,22 @@
   const setMenu = open => { menu.setAttribute('aria-expanded', String(open)); nav.classList.toggle('is-open', open); menuLabel.textContent = open ? 'Close' : 'Menu'; document.body.style.overflow = open ? 'hidden' : ''; };
   menu.addEventListener('click', () => setMenu(menu.getAttribute('aria-expanded') !== 'true'));
   nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-  addEventListener('keydown', event => { if (event.key === 'Escape') setMenu(false); });
+
+  const floatingToggle = document.querySelector('.floating-menu__toggle');
+  const floatingPanel = document.querySelector('.floating-menu__panel');
+  const setFloatingMenu = open => {
+    floatingToggle.setAttribute('aria-expanded', String(open));
+    floatingPanel.classList.toggle('is-open', open);
+    floatingToggle.querySelector('span').textContent = open ? 'Close' : 'More';
+  };
+  floatingToggle.addEventListener('click', () => setFloatingMenu(floatingToggle.getAttribute('aria-expanded') !== 'true'));
+  floatingPanel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setFloatingMenu(false)));
+  document.addEventListener('pointerdown', event => {
+    if (!event.target.closest('.floating-menu')) setFloatingMenu(false);
+  });
+  addEventListener('keydown', event => {
+    if (event.key === 'Escape') { setMenu(false); setFloatingMenu(false); }
+  });
 
   const clock = document.querySelector('#clock');
   const updateClock = () => { clock.textContent = `IST ${new Intl.DateTimeFormat('en-IN', { timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true }).format(new Date())}`; };

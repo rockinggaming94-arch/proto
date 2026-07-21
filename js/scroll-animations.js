@@ -1,31 +1,111 @@
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const animated = document.querySelectorAll('.reveal, .split-text, .image-reveal');
-  animated.forEach((element, index) => element.style.setProperty('--delay', `${Math.min(index % 4, 3) * 45}ms`));
+  const root = document.documentElement;
+  const animated = document.querySelectorAll('.reveal, .split-text, .image-reveal, .project');
+  const sections = document.querySelectorAll('section');
+  const header = document.querySelector('.header');
+  const showreel = document.querySelector('.showreel');
+  const lanes = [...document.querySelectorAll('.gallery-lane')];
 
-  if (reduced) { animated.forEach(element => element.classList.add('is-visible')); return; }
+  animated.forEach((element, index) => element.style.setProperty('--delay', `${Math.min(index % 4, 3) * 55}ms`));
+
+  if (reduced) {
+    animated.forEach(element => element.classList.add('is-visible'));
+    sections.forEach(section => section.classList.add('is-inview'));
+    return;
+  }
 
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); }
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      revealObserver.unobserve(entry.target);
     });
-  }, { rootMargin:'0px 0px -8% 0px', threshold:.08 });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: .08 });
   animated.forEach(element => revealObserver.observe(element));
 
-  const pausable = document.querySelectorAll('.ticker, .showreel');
-  const motionObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => entry.target.classList.toggle('is-paused', !entry.isIntersecting));
-  }, { rootMargin:'150px' });
-  pausable.forEach(element => motionObserver.observe(element));
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => entry.target.classList.toggle('is-inview', entry.isIntersecting));
+  }, { rootMargin: '-12% 0px -12% 0px', threshold: .05 });
+  sections.forEach(section => sectionObserver.observe(section));
 
-  if (matchMedia('(pointer:fine) and (min-width: 801px)').matches) {
-    const title = document.querySelector('.hero__title');
-    let ticking = false;
-    const updateHero = () => {
-      const offset = Math.min(scrollY, innerHeight) * .075;
-      title.style.transform = `translate3d(0,${offset}px,0)`;
-      ticking = false;
-    };
-    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updateHero); } }, { passive:true });
-  }
+  let lastY = scrollY;
+  let targetVelocity = 0;
+  let velocity = 0;
+  let laneA = 0;
+  let laneB = null;
+  let lastTime = performance.now();
+  let running = true;
+
+  const wrapLane = (value, cycleWidth) => {
+    if (!cycleWidth) return value;
+    while (value <= -cycleWidth) value += cycleWidth;
+    while (value > 0) value -= cycleWidth;
+    return value;
+  };
+
+  const render = now => {
+    const y = scrollY;
+    const max = Math.max(document.documentElement.scrollHeight - innerHeight, 1);
+    const delta = y - lastY;
+    const dt = Math.min((now - lastTime) / 16.67, 2);
+    targetVelocity = Math.max(-22, Math.min(22, delta));
+    velocity += (targetVelocity - velocity) * .13;
+    targetVelocity *= .84;
+
+    root.style.setProperty('--scroll-progress', (y / max).toFixed(4));
+    root.style.setProperty('--scroll-velocity', Math.abs(velocity).toFixed(2));
+    header?.classList.toggle('is-scrolled', y > innerHeight * .7);
+
+    const heroShift = Math.min(y, innerHeight) * .075;
+    root.style.setProperty('--hero-shift', heroShift.toFixed(2));
+
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > innerHeight) return;
+      const progress = (innerHeight - rect.top) / (innerHeight + rect.height);
+      section.style.setProperty('--section-progress', progress.toFixed(3));
+      section.style.setProperty('--section-shift', ((progress - .5) * 24).toFixed(2));
+    });
+
+    const portrait = document.querySelector('.story__portrait');
+    if (portrait) {
+      const rect = portrait.getBoundingClientRect();
+      if (rect.bottom > 0 && rect.top < innerHeight) {
+        const progress = (innerHeight - rect.top) / (innerHeight + rect.height);
+        portrait.style.setProperty('--portrait-zoom', (Math.max(0, Math.min(.045, progress * .045))).toFixed(3));
+      }
+    }
+
+    const contact = document.querySelector('.contact');
+    if (contact) {
+      const rect = contact.getBoundingClientRect();
+      if (rect.top < innerHeight && rect.bottom > 0) root.style.setProperty('--contact-shift', ((innerHeight - rect.top) * .035).toFixed(2));
+    }
+
+    if (showreel?.classList.contains('is-inview') && lanes.length === 2) {
+      const impulse = velocity * .62;
+      const cycleA = lanes[0].scrollWidth / 2;
+      const cycleB = lanes[1].scrollWidth / 2;
+      if (laneB === null) laneB = -cycleB;
+      laneA = wrapLane(laneA - (.42 + Math.max(0, impulse)) * dt, cycleA);
+      laneB = wrapLane(laneB + (.36 + Math.max(0, -impulse)) * dt, cycleB);
+      lanes[0].style.setProperty('--lane-x', `${laneA}px`);
+      lanes[1].style.setProperty('--lane-x', `${laneB}px`);
+    }
+
+    lastY = y;
+    lastTime = now;
+    if (running) requestAnimationFrame(render);
+  };
+
+  document.addEventListener('visibilitychange', () => {
+    running = !document.hidden;
+    if (running) {
+      lastTime = performance.now();
+      requestAnimationFrame(render);
+    }
+  });
+
+  requestAnimationFrame(render);
 })();
